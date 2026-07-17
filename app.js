@@ -1,3 +1,4 @@
+/* Label NUVI - 3D Engine & Interactive Logic */
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide Icons
     if (window.lucide) {
@@ -35,22 +36,18 @@ function initApp() {
     // ----------------------------------------------------
     // 2. DYNAMIC TEXT TEXTURE CREATION
     // ----------------------------------------------------
-    // Measures text unit to ensure seamless wrapping without seams
     function createSeamlessTextTexture(text, styleType) {
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         
-        // Define high-res font settings
         const fontHeight = 140;
         const fontSettings = `900 ${fontHeight}px "Syne", "Inter", sans-serif`;
         tempCtx.font = fontSettings;
         
-        // Pad the text for visual separation
         const textUnit = text + "      ";
         const textMetrics = tempCtx.measureText(textUnit);
         const textWidth = textMetrics.width;
         
-        // Set canvas to fit exactly a multiple of repetitions
         const repeats = 4;
         const canvasWidth = Math.ceil(textWidth * repeats);
         const canvasHeight = 256;
@@ -64,10 +61,8 @@ function initApp() {
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'left';
         
-        // Render texture background (transparent)
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
         
-        // Draw the text segments side-by-side
         for (let i = 0; i < repeats; i++) {
             const x = i * textWidth;
             const y = canvasHeight / 2;
@@ -87,7 +82,7 @@ function initApp() {
         
         const texture = new THREE.CanvasTexture(canvas);
         texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping; // Keep Y clamp
+        texture.wrapT = THREE.ClampToEdgeWrapping;
         texture.minFilter = THREE.LinearMipmapLinearFilter;
         texture.magFilter = THREE.LinearFilter;
         
@@ -100,13 +95,11 @@ function initApp() {
     // ----------------------------------------------------
     // 3. 3D CYLINDERS IMPLEMENTATION
     // ----------------------------------------------------
-    // Cylinder dimensions
     const radius = 3.2;
     const height = 1.6;
     const radialSegments = 64;
     const heightSegments = 1;
     const openEnded = true;
-    // Materials configured for double-sided transparent text overlay
     const matSolid = new THREE.MeshBasicMaterial({
         map: solidData.texture,
         transparent: true,
@@ -125,14 +118,12 @@ function initApp() {
         side: THREE.DoubleSide,
         depthWrite: false
     });
-    // Create Mesh elements with subtle variations in dimensions to prevent collision glitches
     const geomSolid = new THREE.CylinderGeometry(radius - 0.01, radius - 0.01, height, radialSegments, heightSegments, openEnded);
     const geomOutline = new THREE.CylinderGeometry(radius, radius, height, radialSegments, heightSegments, openEnded);
     const geomGrey = new THREE.CylinderGeometry(radius + 0.01, radius + 0.01, height, radialSegments, heightSegments, openEnded);
     const cylSolid = new THREE.Mesh(geomSolid, matSolid);
     const cylOutline = new THREE.Mesh(geomOutline, matOutline);
     const cylGrey = new THREE.Mesh(geomGrey, matGrey);
-    // Position & Tilt Cylinders based on reference composition (spherical intersection)
     cylSolid.rotation.set(0.5, 0.4, -0.2);
     cylOutline.rotation.set(-0.6, -0.6, 0.4);
     cylGrey.rotation.set(0.2, -0.8, -0.7);
@@ -142,26 +133,24 @@ function initApp() {
     // ----------------------------------------------------
     // 4. ATMOSPHERIC PARTICLE DUST
     // ----------------------------------------------------
-    const particleCount = 120;
+    const particleCount = 100;
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const speeds = new Float32Array(particleCount);
     for (let i = 0; i < particleCount; i++) {
-        // Spread particles randomly in a 3D box
-        positions[i * 3] = (Math.random() - 0.5) * 16;     // X
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 12; // Y
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 12; // Z
+        positions[i * 3] = (Math.random() - 0.5) * 16;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
         
         speeds[i] = 0.003 + Math.random() * 0.006;
     }
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    // Circular particle texture generator
     const pCanvas = document.createElement('canvas');
     pCanvas.width = 16;
     pCanvas.height = 16;
     const pCtx = pCanvas.getContext('2d');
     const grad = pCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
-    grad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+    grad.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
     grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
     pCtx.fillStyle = grad;
     pCtx.fillRect(0, 0, 16, 16);
@@ -172,44 +161,53 @@ function initApp() {
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        opacity: 0.4
+        opacity: 0.35
     });
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
     // ----------------------------------------------------
-    // 5. INTERACTIVE EVENTS & CURSOR PARALLAX
+    // 5. INTERACTIVE COORDINATES (MOUSE & TOUCH)
     // ----------------------------------------------------
     let mouseX = 0;
     let mouseY = 0;
     let targetMouseX = 0;
     let targetMouseY = 0;
+    
+    // Custom Cursor tracking positions
+    let cursorX = 0;
+    let cursorY = 0;
+    let targetCursorX = 0;
+    let targetCursorY = 0;
+    const customCursor = document.getElementById('custom-cursor');
+    const cursorText = customCursor ? customCursor.querySelector('.cursor-text') : null;
     // Track mouse coordinates
     window.addEventListener('mousemove', (e) => {
+        // WebGL Parallax target
         targetMouseX = (e.clientX / window.innerWidth) - 0.5;
         targetMouseY = (e.clientY / window.innerHeight) - 0.5;
-    });
-    // Touch event parallax support
-    window.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 0) {
-            targetMouseX = (e.touches[0].clientX / window.innerWidth) - 0.5;
-            targetMouseY = (e.touches[0].clientY / window.innerHeight) - 0.5;
+        // Custom cursor target
+        targetCursorX = e.clientX;
+        targetCursorY = e.clientY;
+        // Show cursor on first move
+        if (customCursor) {
+            customCursor.style.opacity = '1';
         }
     });
-    // Drag-to-spin interactivity
-    let isDragging = false;
+    // Drag-to-spin WebGL scene logic
+    let isDraggingCanvas = false;
     let previousPointerX = 0;
     let previousPointerY = 0;
     let manualRotX = 0;
     let manualRotY = 0;
     window.addEventListener('mousedown', (e) => {
         if (e.target.closest('#canvas-container')) {
-            isDragging = true;
+            isDraggingCanvas = true;
             previousPointerX = e.clientX;
             previousPointerY = e.clientY;
         }
     });
     window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
+        if (isDraggingCanvas) {
             const deltaX = e.clientX - previousPointerX;
             const deltaY = e.clientY - previousPointerY;
             manualRotY += deltaX * 0.005;
@@ -218,27 +216,7 @@ function initApp() {
             previousPointerY = e.clientY;
         }
     });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-    
-    // Touch support for drag
-    window.addEventListener('touchstart', (e) => {
-        if (e.target.closest('#canvas-container') && e.touches.length > 0) {
-            isDragging = true;
-            previousPointerX = e.touches[0].clientX;
-            previousPointerY = e.touches[0].clientY;
-        }
-    });
-    window.addEventListener('touchmove', (e) => {
-        if (isDragging && e.touches.length > 0) {
-            const deltaX = e.touches[0].clientX - previousPointerX;
-            const deltaY = e.touches[0].clientY - previousPointerY;
-            manualRotY += deltaX * 0.005;
-            manualRotX += deltaY * 0.005;
-            previousPointerX = e.touches[0].clientX;
-            previousPointerY = e.touches[0].clientY;
-        }
-    });
-    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('mouseup', () => { isDraggingCanvas = false; });
     // Responsive scaling logic
     function handleResize() {
         const width = window.innerWidth;
@@ -248,83 +226,197 @@ function initApp() {
         camera.updateProjectionMatrix();
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        // Adjust camera distance depending on screen sizes for scaling responsiveness
-        if (width < 768) {
-            camera.position.z = 12; // Farther out for mobile layout
-            cylinderGroup.scale.set(0.85, 0.85, 0.85);
+        if (width < 1025) {
+            camera.position.z = 11;
+            cylinderGroup.scale.set(0.78, 0.78, 0.78);
         } else {
             camera.position.z = 9.5;
-            cylinderGroup.scale.set(1, 1, 1);
+            cylinderGroup.scale.set(0.95, 0.95, 0.95);
         }
     }
     
     window.addEventListener('resize', handleResize);
-    handleResize(); // Trigger initially
+    handleResize();
     // ----------------------------------------------------
-    // 6. ANIMATION LOOP
+    // 6. ANIMATION & RENDERING LOOP
     // ----------------------------------------------------
     const clock = new THREE.Clock();
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
         
-        // Spin cylinders on their local Y axis to wrap the text around continuously
+        // Spin cylinders
         cylSolid.rotation.y += 0.005;
         cylOutline.rotation.y -= 0.003;
         cylGrey.rotation.y += 0.0015;
-        // Apply smooth cursor parallax (lerp)
+        // Smooth camera tilt
         mouseX += (targetMouseX - mouseX) * 0.08;
         mouseY += (targetMouseY - mouseY) * 0.08;
-        // Apply manual rotations from drag + cursor tilt
-        cylinderGroup.rotation.x = manualRotX + (mouseY * 0.4);
-        cylinderGroup.rotation.y = manualRotY + (mouseX * 0.4);
+        cylinderGroup.rotation.x = manualRotX + (mouseY * 0.45);
+        cylinderGroup.rotation.y = manualRotY + (mouseX * 0.45);
         
-        // Gently slow down manual drag rotation over time (damping)
-        if (!isDragging) {
+        if (!isDraggingCanvas) {
             manualRotX *= 0.95;
             manualRotY *= 0.95;
-            
-            // Add a very subtle idle sway when not dragging
             const time = clock.getElapsedTime();
-            cylinderGroup.rotation.x += Math.sin(time * 0.5) * 0.0005;
-            cylinderGroup.rotation.y += Math.cos(time * 0.5) * 0.0005;
+            cylinderGroup.rotation.x += Math.sin(time * 0.4) * 0.0004;
+            cylinderGroup.rotation.y += Math.cos(time * 0.4) * 0.0004;
         }
-        // Animate atmospheric dust falling
+        // Floating particles
         const posArray = particleGeometry.attributes.position.array;
         for (let i = 0; i < particleCount; i++) {
-            posArray[i * 3 + 1] -= speeds[i]; // Move Y coordinate downwards
-            
-            // Re-spawn particle at top if it moves off-screen
+            posArray[i * 3 + 1] -= speeds[i];
             if (posArray[i * 3 + 1] < -6) {
                 posArray[i * 3 + 1] = 6;
                 posArray[i * 3] = (Math.random() - 0.5) * 16;
             }
         }
         particleGeometry.attributes.position.needsUpdate = true;
+        // Custom Cursor LERP
+        if (customCursor) {
+            cursorX += (targetCursorX - cursorX) * 0.15;
+            cursorY += (targetCursorY - cursorY) * 0.15;
+            customCursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+        }
         renderer.render(scene, camera);
     }
     animate();
     // ----------------------------------------------------
-    // 7. LANDING PAGE CONTENT & INTERACTIVITY
+    // 7. DRAGGABLE POLAROID CARDS LOGIC
     // ----------------------------------------------------
-    
-    // GSAP Intro Animations
+    const cards = document.querySelectorAll('.draggable-card');
+    let highestZIndex = 30;
+    cards.forEach(card => {
+        let isDragging = false;
+        let startX, startY;
+        let cardStartX, cardStartY;
+        let lastMoveX = 0; // Track movement for rotation skew
+        const dragStart = (e) => {
+            isDragging = true;
+            card.classList.add('dragging');
+            
+            // Set highest z-index to bring current card to front
+            highestZIndex++;
+            card.style.zIndex = highestZIndex;
+            // Get pointer starting coordinates
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+            startX = clientX;
+            startY = clientY;
+            // Get card current coordinates
+            const rect = card.getBoundingClientRect();
+            cardStartX = rect.left;
+            cardStartY = rect.top;
+            // Update custom cursor text
+            if (customCursor) {
+                customCursor.classList.add('hovering-card');
+                if (cursorText) cursorText.textContent = 'HOLDING';
+            }
+        };
+        const dragMove = (e) => {
+            if (!isDragging) return;
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            // Drag velocity skew calculation
+            const currentMoveX = clientX;
+            const speed = currentMoveX - lastMoveX;
+            lastMoveX = currentMoveX;
+            const rotationSkew = Math.max(Math.min(speed * 0.8, 12), -12);
+            // Compute positions
+            const newLeft = cardStartX + dx;
+            const newTop = cardStartY + dy;
+            card.style.left = `${newLeft}px`;
+            card.style.top = `${newTop}px`;
+            card.style.transform = `rotate(${rotationSkew}deg) scale(1.02)`;
+        };
+        const dragEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            card.classList.remove('dragging');
+            // Settle card to standard subtle random rotation angle
+            const randomRotation = (Math.random() * 8) - 4; // between -4deg and 4deg
+            card.style.transform = `rotate(${randomRotation}deg) scale(1)`;
+            if (customCursor) {
+                // Return to normal drag hover text
+                const rect = card.getBoundingClientRect();
+                const mouseOver = (targetCursorX >= rect.left && targetCursorX <= rect.right &&
+                                   targetCursorY >= rect.top && targetCursorY <= rect.bottom);
+                if (mouseOver) {
+                    if (cursorText) cursorText.textContent = 'DRAG';
+                } else {
+                    customCursor.classList.remove('hovering-card');
+                    if (cursorText) cursorText.textContent = 'EXPLORE';
+                }
+            }
+        };
+        // Attach listeners
+        card.addEventListener('mousedown', dragStart);
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('mouseup', dragEnd);
+        // Mobile touch support
+        card.addEventListener('touchstart', dragStart, { passive: true });
+        window.addEventListener('touchmove', dragMove, { passive: false });
+        window.addEventListener('touchend', dragEnd);
+        // Hover events for custom cursor styling
+        card.addEventListener('mouseenter', () => {
+            if (!isDragging && customCursor) {
+                customCursor.classList.add('hovering-card');
+                if (cursorText) cursorText.textContent = 'DRAG';
+            }
+        });
+        card.addEventListener('mouseleave', () => {
+            if (!isDragging && customCursor) {
+                customCursor.classList.remove('hovering-card');
+                if (cursorText) cursorText.textContent = 'EXPLORE';
+            }
+        });
+    });
+    // ----------------------------------------------------
+    // 8. CUSTOM CURSOR INTERACTIVE HOVERS
+    // ----------------------------------------------------
+    const interactiveElements = document.querySelectorAll('a, button, input, .menu-toggle');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            if (customCursor) {
+                customCursor.classList.add('hovering-link');
+                if (cursorText) cursorText.opacity = '0';
+            }
+        });
+        el.addEventListener('mouseleave', () => {
+            if (customCursor) {
+                customCursor.classList.remove('hovering-link');
+                if (cursorText) cursorText.opacity = '1';
+            }
+        });
+    });
+    // ----------------------------------------------------
+    // 9. INTRO ANIMATIONS (GSAP)
+    // ----------------------------------------------------
     if (window.gsap) {
         const tl = gsap.timeline();
         
-        // Reset element positions/opacities for animation
-        gsap.set(['.grid-overlay', '.header', '.hero-branding', '.interactive-panel', '.footer'], { opacity: 0 });
-        gsap.set('.glitch-title', { scale: 0.95 });
+        // Hide/set visual starting states
+        gsap.set(['.grid-overlay', '.header', '.hero-branding', '.control-center', '.footer', '.marquee'], { opacity: 0 });
+        gsap.set('.glitch-title', { scale: 0.93 });
+        gsap.set('#card-1', { x: -400, y: -100, rotation: -30, opacity: 0 });
+        gsap.set('#card-2', { x: 400, y: 100, rotation: 30, opacity: 0 });
         
-        tl.to('.grid-overlay', { opacity: 1, duration: 2, ease: 'power2.out' })
-          .to('.header', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=1.2')
-          .to('.hero-branding', { opacity: 1, duration: 1.5, y: 0, ease: 'power3.out' }, '-=0.8')
-          .to('.glitch-title', { scale: 1, duration: 1.5, ease: 'power3.out' }, '-=1.5')
-          .to('.interactive-panel', { opacity: 1, duration: 1.2, y: 0, ease: 'power2.out' }, '-=0.8')
-          .to('.footer', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=1.2');
+        tl.to('.grid-overlay', { opacity: 1, duration: 1.8, ease: 'power2.out' })
+          .to('.header', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=1')
+          .to('.hero-branding', { opacity: 1, duration: 1.2, y: 0, ease: 'power3.out' }, '-=0.6')
+          .to('.glitch-title', { scale: 1, duration: 1.2, ease: 'power3.out' }, '-=1.2')
+          // Cards slide in with elastic bounce
+          .to('#card-1', { x: 0, y: 0, rotation: -6, opacity: 1, duration: 1.5, ease: 'power4.out' }, '-=0.8')
+          .to('#card-2', { x: 0, y: 0, rotation: 4, opacity: 1, duration: 1.5, ease: 'power4.out' }, '-=1.3')
+          .to('.control-center', { opacity: 1, duration: 1, y: 0, ease: 'power2.out' }, '-=1.2')
+          .to('.footer', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=1')
+          .to('.marquee', { opacity: 1, duration: 1.5, ease: 'power2.out' }, '-=1.2');
     }
-    // Countdown Timer logic
-    // Counts down to Oct 1st, 2026
+    // ----------------------------------------------------
+    // 10. COUNTDOWN TIMER & SUBMISSION
+    // ----------------------------------------------------
     const targetDate = new Date('2026-10-01T00:00:00Z').getTime();
     function updateCountdown() {
         const now = new Date().getTime();
@@ -346,7 +438,7 @@ function initApp() {
         document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
     setInterval(updateCountdown, 1000);
-    updateCountdown(); // Execute immediately
+    updateCountdown();
     // Sidebar Menu Controls
     const menuToggle = document.querySelector('.menu-toggle');
     const closeSidebar = document.querySelector('.close-sidebar');
@@ -361,7 +453,6 @@ function initApp() {
             sidebar.classList.remove('active');
         });
     }
-    // Click outside sidebar to close it
     document.addEventListener('click', (e) => {
         if (sidebar && sidebar.classList.contains('active')) {
             if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
@@ -369,18 +460,16 @@ function initApp() {
             }
         }
     });
-    // Email Subscription Processing
+    // Subscription Form Submission
     const subscribeForm = document.getElementById('subscribe-form');
     const emailInput = document.getElementById('email-input');
     const formFeedback = document.getElementById('form-feedback');
     const submitBtn = document.querySelector('.submit-btn');
     const subscriptionCard = document.querySelector('.subscription-card');
-    // Helper: Display feedback
     function setFeedback(message, type) {
         formFeedback.textContent = message;
         formFeedback.className = 'form-feedback ' + type;
         
-        // Clear message after 4 seconds if not success
         if (type !== 'success') {
             setTimeout(() => {
                 formFeedback.textContent = '';
@@ -396,7 +485,7 @@ function initApp() {
         if (subscriptionCard) {
             subscriptionCard.innerHTML = `
                 <div style="text-align: center; padding: 10px 0;">
-                    <i data-lucide="check-circle" style="color: #00ff66; width: 32px; height: 32px; margin-bottom: 12px;"></i>
+                    <i data-lucide="check-circle" style="color: #00ff66; width: 30px; height: 30px; margin-bottom: 12px; display: inline-block;"></i>
                     <h3 class="card-title" style="color: #00ff66; margin-bottom: 5px;">ACCESS KEY REQUESTED</h3>
                     <p class="card-subtitle" style="margin-bottom: 0;">YOUR ACCOUNT IS CURRENTLY IN THE PRIORITIZED QUEUE FOR COLLECTION I.</p>
                 </div>
@@ -413,23 +502,18 @@ function initApp() {
                 setFeedback('PLEASE ENTER A VALID EMAIL', 'error');
                 return;
             }
-            // Simple validation regex
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(emailValue)) {
                 setFeedback('INVALID EMAIL FORMAT', 'error');
                 return;
             }
-            // Processing state
             submitBtn.disabled = true;
             emailInput.disabled = true;
-            const originalBtnHtml = submitBtn.innerHTML;
-            submitBtn.innerHTML = `<span class="btn-text">VERIFYING...</span>`;
-            // Mock server request delay
+            submitBtn.innerHTML = `<span class="btn-text">VERIFYING</span>`;
             setTimeout(() => {
                 localStorage.setItem('nuvi_subscribed', 'true');
                 setFeedback('ACCESS GRANTED. VERIFICATION SENT.', 'success');
                 
-                // Animate to subscribed visual state
                 if (window.gsap) {
                     gsap.to(subscriptionCard, {
                         opacity: 0,
