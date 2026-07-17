@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUVI LABEL | Coming Soon</title>
+    <meta name="description" content="NUVI LABEL - An upcoming contemporary luxury fashion brand. Collection I launching soon. Subscribe for early access.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- GSAP for premium animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Three.js for the 3D rotating text cylinders -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas Container for Three.js -->
+    <div id="canvas-container"></div>
+    
+    <!-- Subtle overlay grid for tech/fashion look -->
+    <div class="grid-overlay"></div>
+    
+    <!-- Noise overlay for high-end grain texture -->
+    <div class="noise-overlay"></div>
+    <!-- Main Page Wrapper -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="#" class="brand-name">NUVI LABEL</a>
+            </div>
+            <div class="header-center">
+                <span class="status-indicator">
+                    <span class="status-dot"></span>
+                    COLLECTION 01 / FALL-WINTER
+                </span>
+            </div>
+            <div class="header-right">
+                <a href="#" class="nav-link archive-btn">ARCHIVE</a>
+                <button class="menu-toggle" aria-label="Toggle Menu">
+                    <span class="menu-line"></span>
+                    <span class="menu-line"></span>
+                </button>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Center Branding Overlay -->
+            <div class="hero-branding">
+                <p class="tagline">COMING SOON</p>
+                <h1 class="glitch-title" data-text="NUVI LABEL">NUVI LABEL</h1>
+                <p class="brand-philosophy">A study in contemporary form, raw texture, and silent luxury.</p>
+            </div>
+            <!-- Interactive Panel -->
+            <div class="interactive-panel">
+                <!-- Countdown Section -->
+                <div class="countdown-container">
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="days">00</span>
+                        <span class="countdown-label">DAYS</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="hours">00</span>
+                        <span class="countdown-label">HOURS</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="minutes">00</span>
+                        <span class="countdown-label">MINUTES</span>
+                    </div>
+                    <div class="countdown-divider">:</div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="seconds">00</span>
+                        <span class="countdown-label">SECONDS</span>
+                    </div>
+                </div>
+                <!-- Subscription Box -->
+                <div class="subscription-card">
+                    <h3 class="card-title">SUBSCRIBE FOR EARLY PRIVILEGES</h3>
+                    <p class="card-subtitle">Receive private keys to Collection I prior to public release.</p>
+                    <form class="subscribe-form" id="subscribe-form">
+                        <div class="input-group">
+                            <input type="email" id="email-input" class="email-input" placeholder="ENTER YOUR EMAIL ADDRESS" required>
+                            <button type="submit" class="submit-btn" aria-label="Subscribe">
+                                <span class="btn-text">REQUEST ACCESS</span>
+                                <i data-lucide="arrow-right" class="btn-icon"></i>
+                            </button>
+                        </div>
+                        <div class="form-feedback" id="form-feedback"></div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="copyright">&copy; 2026 NUVI LABEL. ALL RIGHTS RESERVED.</span>
+            </div>
+            <div class="footer-center">
+                <span class="location-coords">48.8566&deg; N, 2.3522&deg; E &mdash; PARIS &bull; NYC</span>
+            </div>
+            <div class="footer-right">
+                <div class="social-links">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-link">INSTAGRAM</a>
+                    <span class="social-divider">/</span>
+                    <span class="social-link" style="cursor: not-allowed; opacity: 0.5;">TIKTOK</span>
+                    <span class="social-divider">/</span>
+                    <span class="social-link" style="cursor: not-allowed; opacity: 0.5;">SPOTIFY</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- Sliding Sidebar Menu -->
+    <div class="sidebar-menu" id="sidebar-menu">
+        <button class="close-sidebar" aria-label="Close Menu">
+            <i data-lucide="x"></i>
+        </button>
+        <div class="sidebar-content">
+            <div class="sidebar-brand">NUVI LABEL</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active">COMING SOON</a>
+                <a href="#" class="sidebar-link disabled">COLLECTION I (LOCKED)</a>
+                <a href="#" class="sidebar-link disabled">THE ATELIER (LOCKED)</a>
+                <a href="#" class="sidebar-link disabled">EDITORIAL (LOCKED)</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>INQUIRIES: ATELIER@NUVILABEL.COM</p>
+                <div class="social-links">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-link">INSTAGRAM</a>
+                    <span class="social-divider">/</span>
+                    <span class="social-link" style="cursor: not-allowed; opacity: 0.5;">TIKTOK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
