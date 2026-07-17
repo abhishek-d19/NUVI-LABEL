@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> LABEL NUVI | Coming Soon</title>
-    <meta name="description" content="LABEL NUVI - An upcoming contemporary luxury fashion brand. Collection I launching soon. Subscribe for early access.">
+    <title>Label NUVI | Coming Soon</title>
+    <meta name="description" content="Label NUVI - An upcoming contemporary luxury fashion brand. Collection I launching soon. Subscribe for early access.">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Custom Mouse-Following Cursor -->
+    <div id="custom-cursor">
+        <span class="cursor-text">EXPLORE</span>
+    </div>
     <!-- Background Canvas Container for Three.js -->
     <div id="canvas-container"></div>
     
@@ -31,18 +35,27 @@
     
     <!-- Noise overlay for high-end grain texture -->
     <div class="noise-overlay"></div>
+    <!-- Infinite Scrolling Marquee (Top) -->
+    <div class="marquee marquee-top">
+        <div class="marquee-content">
+            <span>LABEL NUVI &bull; COLLECTION 01 &bull; FALL-WINTER 2026 &bull; ATELIER DEBUT &bull; </span>
+            <span>LABEL NUVI &bull; COLLECTION 01 &bull; FALL-WINTER 2026 &bull; ATELIER DEBUT &bull; </span>
+            <span>LABEL NUVI &bull; COLLECTION 01 &bull; FALL-WINTER 2026 &bull; ATELIER DEBUT &bull; </span>
+            <span>LABEL NUVI &bull; COLLECTION 01 &bull; FALL-WINTER 2026 &bull; ATELIER DEBUT &bull; </span>
+        </div>
+    </div>
     <!-- Main Page Wrapper -->
     <div class="app-container">
         
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <a href="#" class="brand-name">LABEL NUVI </a>
+                <a href="#" class="brand-name">Label NUVI</a>
             </div>
             <div class="header-center">
                 <span class="status-indicator">
                     <span class="status-dot"></span>
-                    COLLECTION 01 / FALL-WINTER
+                    COLLECTION 01 / AUTUMN-WINTER
                 </span>
             </div>
             <div class="header-right">
@@ -53,16 +66,42 @@
                 </button>
             </div>
         </header>
-        <!-- Main Content -->
+        <!-- Main Content (Moodboard Workspace) -->
         <main class="main-content">
             <!-- Center Branding Overlay -->
             <div class="hero-branding">
                 <p class="tagline">COMING SOON</p>
-                <h1 class="glitch-title" data-text="NUVI LABEL">LABEL NUVI</h1>
+                <h1 class="glitch-title" data-text="Label NUVI">Label NUVI</h1>
                 <p class="brand-philosophy">A study in contemporary form, raw texture, and silent luxury.</p>
             </div>
-            <!-- Interactive Panel -->
-            <div class="interactive-panel">
+            <!-- Draggable Model Card 1 (White Top / Brown Skirt) -->
+            <div class="draggable-card" id="card-1" style="top: 15%; left: 10%; transform: rotate(-6deg);">
+                <div class="card-drag-handle">
+                    <i data-lucide="grip-horizontal" class="drag-icon"></i>
+                </div>
+                <div class="card-image-wrapper">
+                    <img src="model1.jpg" alt="Look 04 - Core Tee">
+                </div>
+                <div class="card-footer-info">
+                    <span class="card-tag">LOOK 04</span>
+                    <span class="card-detail">CORE RIBBED TEE</span>
+                </div>
+            </div>
+            <!-- Draggable Model Card 2 (Orange Dress) -->
+            <div class="draggable-card" id="card-2" style="top: 25%; right: 10%; transform: rotate(4deg);">
+                <div class="card-drag-handle">
+                    <i data-lucide="grip-horizontal" class="drag-icon"></i>
+                </div>
+                <div class="card-image-wrapper">
+                    <img src="model2.jpg" alt="Look 12 - Silk Backless">
+                </div>
+                <div class="card-footer-info">
+                    <span class="card-tag">LOOK 12</span>
+                    <span class="card-detail">SILK COCKTAIL DRESS</span>
+                </div>
+            </div>
+            <!-- Floating Controller (Countdown + Subscription Box) -->
+            <div class="control-center">
                 <!-- Countdown Section -->
                 <div class="countdown-container">
                     <div class="countdown-item">
@@ -72,28 +111,28 @@
                     <div class="countdown-divider">:</div>
                     <div class="countdown-item">
                         <span class="countdown-value" id="hours">00</span>
-                        <span class="countdown-label">HOURS</span>
+                        <span class="countdown-label">HRS</span>
                     </div>
                     <div class="countdown-divider">:</div>
                     <div class="countdown-item">
                         <span class="countdown-value" id="minutes">00</span>
-                        <span class="countdown-label">MINUTES</span>
+                        <span class="countdown-label">MIN</span>
                     </div>
                     <div class="countdown-divider">:</div>
                     <div class="countdown-item">
                         <span class="countdown-value" id="seconds">00</span>
-                        <span class="countdown-label">SECONDS</span>
+                        <span class="countdown-label">SEC</span>
                     </div>
                 </div>
                 <!-- Subscription Box -->
                 <div class="subscription-card">
-                    <h3 class="card-title">SUBSCRIBE FOR EARLY PRIVILEGES</h3>
+                    <h3 class="card-title">REQUEST ATELIER DEBUT ACCESS</h3>
                     <p class="card-subtitle">Receive private keys to Collection I prior to public release.</p>
                     <form class="subscribe-form" id="subscribe-form">
                         <div class="input-group">
                             <input type="email" id="email-input" class="email-input" placeholder="ENTER YOUR EMAIL ADDRESS" required>
                             <button type="submit" class="submit-btn" aria-label="Subscribe">
-                                <span class="btn-text">REQUEST ACCESS</span>
+                                <span class="btn-text">SUBMIT</span>
                                 <i data-lucide="arrow-right" class="btn-icon"></i>
                             </button>
                         </div>
@@ -105,7 +144,7 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-left">
-                <span class="copyright">&copy; 2026  LABEL NUVI. ALL RIGHTS RESERVED.</span>
+                <span class="copyright">&copy; 2026 Label NUVI. ALL RIGHTS RESERVED.</span>
             </div>
             <div class="footer-center">
                 <span class="location-coords">48.8566&deg; N, 2.3522&deg; E &mdash; PARIS &bull; NYC</span>
@@ -127,7 +166,7 @@
             <i data-lucide="x"></i>
         </button>
         <div class="sidebar-content">
-            <div class="sidebar-brand">LABEL NUVI</div>
+            <div class="sidebar-brand">Label NUVI</div>
             <nav class="sidebar-nav">
                 <a href="#" class="sidebar-link active">COMING SOON</a>
                 <a href="#" class="sidebar-link disabled">COLLECTION I (LOCKED)</a>
@@ -144,6 +183,16 @@
             </div>
         </div>
     </div>
+    <!-- Infinite Scrolling Marquee (Bottom) -->
+    <div class="marquee marquee-bottom">
+        <div class="marquee-content">
+            <span>PRE-RELEASE REGISTER OPEN &bull; REVEAL IN PROGRESS &bull; FORM & FUNCTION &bull; </span>
+            <span>PRE-RELEASE REGISTER OPEN &bull; REVEAL IN PROGRESS &bull; FORM & FUNCTION &bull; </span>
+            <span>PRE-RELEASE REGISTER OPEN &bull; REVEAL IN PROGRESS &bull; FORM & FUNCTION &bull; </span>
+            <span>PRE-RELEASE REGISTER OPEN &bull; REVEAL IN PROGRESS &bull; FORM & FUNCTION &bull; </span>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
+
